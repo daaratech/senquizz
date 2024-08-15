@@ -12,7 +12,7 @@ class HomeProfileWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(16),
+        //borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [

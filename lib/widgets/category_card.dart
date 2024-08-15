@@ -6,7 +6,8 @@ class CardWithImageBackground extends StatelessWidget {
 
   const CardWithImageBackground({
     super.key,
-    required this.imageUrl,
+    this.imageUrl =
+        "https://cdn.pixabay.com/photo/2021/10/11/23/49/app-6702045_1280.png",
     required this.title,
   });
 

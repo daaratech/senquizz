@@ -1,37 +1,45 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:senquizz/pages/authors_page.dart';
+import 'package:senquizz/pages/categories_page.dart';
+import 'package:senquizz/pages/quizz_list_page.dart';
 import 'package:senquizz/widgets/category_card.dart';
 
 import 'widgets/home_profile_widget.dart';
 import 'widgets/quiz_card.dart';
 
 class HomePage extends StatelessWidget {
+  static const String routeName = "/home";
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   flexibleSpace:
-      //       const ProfileWidget(name: "Saliou Seck", level: "Expert"),
-      // ),
+      appBar: AppBar(
+        bottom: PreferredSize(
+          preferredSize:
+              Size.fromHeight(MediaQuery.of(context).size.height * 0.12),
+          child: Container(
+            color: Theme.of(context).primaryColor,
+            child: const HomeProfileWidget(),
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              const SizedBox(height: 24),
-              const HomeProfileWidget(),
+              // const HomeProfileWidget(),
               const SizedBox(height: 15),
               SubSectionList(
                 title: "Top Authors",
                 height: MediaQuery.of(context).size.height * 0.15,
                 onViewAll: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("View All Authors"),
-                    ),
-                  );
+                  Navigator.of(context).pushNamed(AuthorPage.routeName);
                 },
                 children: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -45,6 +53,7 @@ class HomePage extends StatelessWidget {
                 title: "Top Collections",
                 height: MediaQuery.of(context).size.height * 0.16,
                 onViewAll: () {
+                  Navigator.of(context).pushNamed(CategoryPage.routeName);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("View All Collections"),
@@ -70,6 +79,11 @@ class HomePage extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
+              ViewAllWidget(
+                  title: "Most popular Quizzes",
+                  onViewAll: () {
+                    Navigator.of(context).pushNamed(QuizPage.routeName);
+                  }),
               ...List.generate(3, (index) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height * 0.25,
@@ -118,34 +132,50 @@ class SubSectionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          children: [
-            const SizedBox(width: 10),
-            Text(
-              title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const Spacer(),
-            TextButton(
-              onPressed: onViewAll,
-              child: const Row(
-                children: [
-                  Text("View All"),
-                  SizedBox(width: 5),
-                  Icon(Icons.arrow_forward),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-          ],
-        ),
+        ViewAllWidget(title: title, onViewAll: onViewAll),
         SizedBox(
           height: height,
           child: children,
         ),
+      ],
+    );
+  }
+}
+
+class ViewAllWidget extends StatelessWidget {
+  const ViewAllWidget({
+    super.key,
+    required this.title,
+    required this.onViewAll,
+  });
+
+  final String title;
+  final Function() onViewAll;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const Spacer(),
+        TextButton(
+          onPressed: onViewAll,
+          child: const Row(
+            children: [
+              Text("View All"),
+              SizedBox(width: 5),
+              Icon(Icons.arrow_forward),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
       ],
     );
   }

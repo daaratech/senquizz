@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:senquizz/Theme/theme.dart';
-import 'package:senquizz/home_page.dart';
+import 'package:senquizz/app_route.dart';
+
+import 'home_page.dart';
 
 void main() {
   runApp(const SenQuizz());
@@ -18,7 +20,9 @@ class SenQuizz extends StatelessWidget {
         colorScheme: MaterialTheme.lightScheme(),
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      onGenerateRoute: AppRoutes.onGenerateRoutes,
+      initialRoute: HomePage.routeName,
+      //home: const HomePage(),
     );
   }
 }
