@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:senquizz/features/quiz/screens/game_screen.dart';
+import 'package:senquizz/features/quiz/screens/game_widget.dart';
 
 class QuizCard extends StatelessWidget {
   final List<String> categories;
@@ -6,6 +8,7 @@ class QuizCard extends StatelessWidget {
   final String description;
   final int questionCount;
   final int points;
+  final String uuid;
 
   const QuizCard({
     super.key,
@@ -14,6 +17,7 @@ class QuizCard extends StatelessWidget {
     required this.description,
     required this.questionCount,
     required this.points,
+    required this.uuid,
   });
 
   @override
@@ -84,7 +88,11 @@ class QuizCard extends StatelessWidget {
               ClickableRoundedLabel(
                 label: 'Commencer',
                 onTap: () {
-                  // Handle onTap action
+                  Navigator.pushNamed(
+                    context,
+                    GameScreen.routeName,
+                    arguments: {GameScreen.uuidArgs: uuid},
+                  );
                 },
               ),
             ],

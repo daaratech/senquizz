@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:senquizz/Theme/theme.dart';
 import 'package:senquizz/app_route.dart';
 
+import 'features/quiz/data/repository/quiz_repo.dart';
 import 'home_page.dart';
 
 void main() {
@@ -14,15 +16,18 @@ class SenQuizz extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: MaterialTheme.lightScheme(),
+    return RepositoryProvider(
+      create: (context) => QuizRepository(),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: MaterialTheme.lightScheme(),
+        ),
+        debugShowCheckedModeBanner: false,
+        onGenerateRoute: AppRoutes.onGenerateRoutes,
+        initialRoute: HomePage.routeName,
+        //home: const HomePage(),
       ),
-      debugShowCheckedModeBanner: false,
-      onGenerateRoute: AppRoutes.onGenerateRoutes,
-      initialRoute: HomePage.routeName,
-      //home: const HomePage(),
     );
   }
 }

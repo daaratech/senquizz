@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:senquizz/features/quiz/data/repository/quiz_repo.dart';
+import 'package:senquizz/features/quiz/screens/quiz_form_screen.dart';
 import 'package:senquizz/widgets/quiz_card.dart';
 
-import '../features/shared/ui/bussiness_logic/quizz/quizz_cubit.dart';
+import '../features/shared/ui/bussiness_logic/quizz_list/quizz_list_cubit.dart';
 
-class QuizPage extends StatelessWidget {
-  static const routeName = '/quizzes';
-  const QuizPage({super.key});
+class QuizListPage extends StatelessWidget {
+  static const routeName = '/quizzes_list';
+  const QuizListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => QuizCubit()..loadQuizzes(),
+      create: (context) =>
+          QuizListCubit(context.read<QuizRepository>())..loadQuizzes(),
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, QuizFormScreen.routeName);
+          },
+          child: const Icon(Icons.add),
+        ),
         appBar: AppBar(
           title: const Text('Quizzes'),
           centerTitle: true,
@@ -31,7 +40,7 @@ class QuizPage extends StatelessWidget {
                     fillColor: Colors.white,
                   ),
                   onChanged: (query) {
-                    context.read<QuizCubit>().searchQuiz(query);
+                    context.read<QuizListCubit>().searchQuiz(query);
                   },
                 ),
               );
@@ -45,7 +54,7 @@ class QuizPage extends StatelessWidget {
               child: FilterByCategorySection(),
             ),
             Expanded(
-              child: BlocBuilder<QuizCubit, QuizState>(
+              child: BlocBuilder<QuizListCubit, QuizListState>(
                 builder: (context, state) {
                   if (state.isLoading) {
                     return const Center(child: CircularProgressIndicator());
@@ -61,11 +70,13 @@ class QuizPage extends StatelessWidget {
                         return SizedBox(
                           height: MediaQuery.of(context).size.height * 0.25,
                           child: QuizCard(
-                              categories: quiz.categories,
-                              title: quiz.title,
-                              description: quiz.description,
-                              questionCount: quiz.questions,
-                              points: quiz.points),
+                            categories: quiz.categories,
+                            title: quiz.name,
+                            description: quiz.description,
+                            questionCount: quiz.questions.length,
+                            points: quiz.numberOfQuestions,
+                            uuid: quiz.uuid!,
+                          ),
                         );
                       },
                     );
@@ -108,7 +119,9 @@ class _FilterByCategorySectionState extends State<FilterByCategorySection> {
               } else {
                 selectedCategories.remove(category);
               }
-              context.read<QuizCubit>().filterByCategories(selectedCategories);
+              context
+                  .read<QuizListCubit>()
+                  .filterByCategories(selectedCategories);
             });
           },
         );

@@ -1,26 +1,30 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:senquizz/features/shared/domain/model/quizz/quizz.dart';
 
-class QuizState {
+import 'package:senquizz/features/quiz/models/quiz.dart';
+
+import '../../../../quiz/data/repository/quiz_repo.dart';
+
+class QuizListState {
   final List<Quiz> quizzes;
   final List<Quiz> filteredQuizzes;
   final bool isLoading;
   final String error;
 
-  QuizState({
+  QuizListState({
     required this.quizzes,
     required this.filteredQuizzes,
     this.isLoading = false,
     this.error = '',
   });
 
-  QuizState copyWith({
+  QuizListState copyWith({
     List<Quiz>? quizzes,
     List<Quiz>? filteredQuizzes,
     bool? isLoading,
     String? error,
   }) {
-    return QuizState(
+    return QuizListState(
       quizzes: quizzes ?? this.quizzes,
       filteredQuizzes: filteredQuizzes ?? this.filteredQuizzes,
       isLoading: isLoading ?? this.isLoading,
@@ -29,42 +33,15 @@ class QuizState {
   }
 }
 
-class QuizCubit extends Cubit<QuizState> {
-  QuizCubit() : super(QuizState(quizzes: [], filteredQuizzes: []));
+class QuizListCubit extends Cubit<QuizListState> {
+  final QuizRepository quizRepository;
+  QuizListCubit(
+    this.quizRepository,
+  ) : super(QuizListState(quizzes: [], filteredQuizzes: []));
 
   void loadQuizzes() {
     emit(state.copyWith(isLoading: true));
-    final quizzes = [
-      Quiz(
-        title: 'Math Quiz',
-        description: 'A quiz about basic math concepts.',
-        questions: 10,
-        points: 100,
-        categories: ['Math', 'Science'],
-      ),
-      Quiz(
-        title: 'History Quiz',
-        description: 'A quiz about world history.',
-        questions: 15,
-        points: 150,
-        categories: ['History'],
-      ),
-      Quiz(
-        title: 'Geography Quiz',
-        description: 'A quiz about world history.',
-        questions: 15,
-        points: 150,
-        categories: ['History', 'Geography'],
-      ),
-      Quiz(
-        title: 'Science Quiz',
-        description: 'A quiz about world history.',
-        questions: 15,
-        points: 150,
-        categories: ['History', 'Geography', 'Science'],
-      ),
-      // Add more quizzes here
-    ];
+    final List<Quiz> quizzes = quizRepository.getQuizzes();
     // Simulate a network call
     Future.delayed(const Duration(seconds: 1), () {
       emit(state.copyWith(
@@ -74,7 +51,7 @@ class QuizCubit extends Cubit<QuizState> {
 
   void searchQuiz(String query) {
     final filteredQuizzes = state.quizzes.where((quiz) {
-      return quiz.title.toLowerCase().contains(query.toLowerCase());
+      return quiz.name.toLowerCase().contains(query.toLowerCase());
     }).toList();
     emit(state.copyWith(filteredQuizzes: filteredQuizzes));
   }
