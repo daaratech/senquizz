@@ -17,27 +17,32 @@ class App extends StatelessWidget {
 }
 
 class ClipShapeBackground extends StatelessWidget {
-  const ClipShapeBackground({super.key});
+  final double height;
+  final List<Color> colors;
+  const ClipShapeBackground(
+      {super.key, this.height = 380, this.colors = const []});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.onPrimary,
       body: Column(
         children: [
           ClipPath(
-            clipper: MyCustomClipper(),
+            clipper: BackgroundWaveClipper(), // MyCustomClipper(),
             child: Container(
               width: MediaQuery.of(context).size.width,
-              height: 380,
+              height: height,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                  Theme.of(context).colorScheme.primary,
-                ],
-                // colors: [Color(0xFFFACCCC), Color(0xFFF6EFE9)],
+                colors: colors.isEmpty
+                    ? [
+                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                      ]
+                    : colors,
               )),
             ),
           )

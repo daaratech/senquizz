@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:senquizz/features/quiz/data/repository/quiz_repo.dart';
 import 'package:senquizz/features/shared/ui/bussiness_logic/quizz_list/quizz_list_cubit.dart';
+import 'package:senquizz/pages/author_detail.dart';
 import 'package:senquizz/pages/authors_page.dart';
-import 'package:senquizz/pages/categories_page.dart';
 import 'package:senquizz/pages/quizz_list_page.dart';
 import 'package:senquizz/widgets/category_card.dart';
 
+import 'features/quiz/screens/clipped_topbar.dart';
+import 'features/shared/ui/bussiness_logic/author/author_cubit.dart';
+import 'features/shared/ui/bussiness_logic/category/category_cubit.dart';
 import 'widgets/home_profile_widget.dart';
 import 'widgets/quiz_card.dart';
 
@@ -16,100 +19,104 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          QuizListCubit(context.read<QuizRepository>())..loadQuizzes(),
-      child: Scaffold(
-        appBar: AppBar(
-          bottom: PreferredSize(
-            preferredSize:
-                Size.fromHeight(MediaQuery.of(context).size.height * 0.12),
-            child: Container(
-              color: Theme.of(context).primaryColor,
-              child: const HomeProfileWidget(),
-            ),
-          ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              QuizListCubit(context.read<QuizRepository>())..loadQuizzes(),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                // const HomeProfileWidget(),
-                const SizedBox(height: 15),
-                SubSectionList(
-                  title: "Top Authors",
-                  height: MediaQuery.of(context).size.height * 0.15,
-                  onViewAll: () {
-                    Navigator.of(context).pushNamed(AuthorPage.routeName);
-                  },
-                  children: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: sampleAuthor.length,
-                    itemBuilder: (context, index) {
-                      return AuthorItem(author: sampleAuthor[index]);
-                    },
-                  ),
-                ),
-                SubSectionList(
-                  title: "Top Collections",
-                  height: MediaQuery.of(context).size.height * 0.16,
-                  onViewAll: () {
-                    Navigator.of(context).pushNamed(CategoryPage.routeName);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("View All Collections"),
-                      ),
-                    );
-                  },
-                  children: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: sampleCollection.length,
-                    itemBuilder: (context, index) {
-                      return SizedBox(
-                        width: 150,
-                        height: 100,
-                        child: CardWithImageBackground(
-                          title: sampleCollection[index],
-                          imageUrl:
-                              "https://i.le360.ma/le360sport/sites/default/files/styles/img_738_520/public/assets/images/2022/08-reda/sport.jpg",
+        BlocProvider(
+          create: (context) => CategoryCubit()..loadCategories(),
+        ),
+        BlocProvider(create: (context) => AuthorCubit()..loadAuthors()),
+      ],
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.onPrimary,
+          body: Container(
+            //padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  // const HomeProfileWidget(),
+                  const HomeProfileWidget(),
+                  const SizedBox(height: 20),
+                  BlocBuilder<AuthorCubit, AuthorState>(
+                    builder: (context, state) {
+                      return SubSectionList(
+                        title: "Top Authors",
+                        height: MediaQuery.of(context).size.height * 0.15,
+                        onViewAll: () {
+                          Navigator.of(context).pushNamed(AuthorPage.routeName);
+                        },
+                        children: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: state.authors.length,
+                          itemBuilder: (context, index) {
+                            return AuthorItem(author: state.authors[index]);
+                          },
                         ),
                       );
                     },
                   ),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                BlocBuilder<QuizListCubit, QuizListState>(
-                  builder: (context, state) {
-                    return Column(
-                      children: [
-                        ViewAllWidget(
-                            title: "Most popular Quizzes",
-                            onViewAll: () {
-                              Navigator.of(context)
-                                  .pushNamed(QuizListPage.routeName);
-                            }),
-                        ...state.quizzes.map((quiz) {
-                          return SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.25,
-                            child: QuizCard(
-                              uuid: quiz.uuid!,
-                              categories: quiz.categories,
-                              title: quiz.name,
-                              description: quiz.description,
-                              questionCount: quiz.numberOfQuestions,
-                              points: quiz.numberOfQuestions,
+                  BlocBuilder<CategoryCubit, CategoryState>(
+                    builder: (context, state) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Categories",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            child: CategoryPager(
+                              categories: state.categories,
                             ),
-                          );
-                        }),
-                      ],
-                    );
-                  },
-                )
-              ],
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  BlocBuilder<QuizListCubit, QuizListState>(
+                    builder: (context, state) {
+                      return Column(
+                        children: [
+                          ViewAllWidget(
+                              title: "Most popular Quizzes",
+                              onViewAll: () {
+                                Navigator.of(context)
+                                    .pushNamed(QuizListPage.routeName);
+                              }),
+                          ...state.quizzes.map((quiz) {
+                            return SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.25,
+                              child: QuizCard(
+                                uuid: quiz.uuid!,
+                                categories: quiz.categories,
+                                title: quiz.name,
+                                description: quiz.description,
+                                questionCount: quiz.numberOfQuestions,
+                                points: quiz.numberOfQuestions,
+                              ),
+                            );
+                          }),
+                        ],
+                      );
+                    },
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -190,7 +197,7 @@ class AuthorItem extends StatelessWidget {
     required this.author,
   });
 
-  final String author;
+  final Author author;
 
   @override
   Widget build(BuildContext context) {
@@ -199,10 +206,11 @@ class AuthorItem extends StatelessWidget {
       child: Column(
         children: [
           CircularAssetWidget(
-            size: MediaQuery.of(context).size.height * 0.1,
+            imageUrl: author.profileImageUrl,
+            size: MediaQuery.of(context).size.height * 0.08,
           ),
           Text(
-            author,
+            author.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

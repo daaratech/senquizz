@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/game_cubit/game_cubit.dart';
 import '../data/repository/quiz_repo.dart';
-import '../models/quiz.dart';
 import 'game_widget.dart';
 import 'result_screen.dart';
 

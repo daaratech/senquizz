@@ -1,8 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../cubit/quiz_cubit.dart';
 import '../cubit/quiz_form_cubit/quiz_form_cubit.dart';
 import '../data/repository/quiz_repo.dart';
 import '../models/quiz.dart';
@@ -50,15 +48,6 @@ class QuizFormScreen extends StatelessWidget {
     if (_formKey.currentState!.validate()) {
       final quizFormCubit = context.read<QuizFormCubit>();
       quizFormCubit.createQuiz();
-      // final quiz = quizFormCubit.state.quiz!;
-      // context.read<QuizCubit>().createQuiz(
-      //       quiz.name,
-      //       quiz.level,
-      //       quiz.description,
-      //       quiz.categories,
-      //       quiz.numberOfQuestions,
-      //       quiz.duration,
-      //     );
     }
   }
 }

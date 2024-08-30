@@ -265,7 +265,9 @@ class PossibleResponseCardWidget extends StatelessWidget {
               )),
               Checkbox(
                   value: isSelected,
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    onTap();
+                  },
                   activeColor: statusColor,
                   shape: const CircleBorder()),
             ],

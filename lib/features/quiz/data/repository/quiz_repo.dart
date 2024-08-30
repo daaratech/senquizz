@@ -1,9 +1,10 @@
 import 'package:senquizz/features/quiz/models/quiz.dart';
 
 class QuizRepository {
-  final List<Quiz> quizzes = [];
+  final List<Quiz> quizzes = dummyQuizzes;
   createQuiz(Quiz quiz) {
-    quizzes.add(quiz);
+    final lastQuizIndex = quizzes.length - 1;
+    quizzes.insert(lastQuizIndex, quiz);
   }
 
   getQuizzes() {

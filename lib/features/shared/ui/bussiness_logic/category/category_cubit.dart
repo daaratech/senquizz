@@ -38,7 +38,18 @@ class CategoryCubit extends Cubit<CategoryState> {
   void loadCategories() {
     emit(state.copyWith(isLoading: true));
     // Simulate a network call
-    final categories = ['Science', 'Math', 'History', 'Geography'];
+    final categories = [
+      'Science',
+      'Math',
+      'History',
+      'Geography',
+      'Literature & Language Arts',
+      'Art',
+      'Music',
+      'Sports',
+      'Movies',
+      'TV Shows'
+    ];
     Future.delayed(const Duration(seconds: 1), () {
       emit(state.copyWith(
           filteredCategories: categories,
